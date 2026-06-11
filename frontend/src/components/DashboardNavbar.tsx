@@ -1,12 +1,24 @@
+import { useState } from "react";
+
+
 interface DashboardNavbarProps {
   onResume: () => void;
   onBack: () => void; 
+   onSkillGapDashboard: () => void;
 }
+
+
 export default function DashboardNavbar({
   onResume,
   onBack,
+   onSkillGapDashboard,
+
 }: DashboardNavbarProps)
 {
+
+  const [showDashboardMenu, setShowDashboardMenu] = useState(false);
+
+
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200">
 
@@ -31,9 +43,36 @@ export default function DashboardNavbar({
         {/* Navigation */}
         <nav className="hidden lg:flex items-center gap-8 text-gray-600 font-medium">
 
-          <button className="hover:text-[#171C4A]">
-            Dashboard
-          </button>
+
+
+          {/* Dashboard Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowDashboardMenu(!showDashboardMenu)}
+              className="hover:text-[#171C4A] flex items-center gap-1"
+            >
+              Dashboard
+              <span className={`transition-transform ${showDashboardMenu ? "rotate-180" : ""}`}>
+                ▼
+              </span>
+            </button>
+
+            {showDashboardMenu && (
+              <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden min-w-[220px]">
+                <button
+                  onClick={() => {
+                    onSkillGapDashboard?.();
+                    setShowDashboardMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-3 hover:bg-[#F8F6E8] text-gray-700 font-medium transition"
+                >
+                  ✓ Skill Gap Dashboard
+                </button>
+              </div>
+            )}
+          </div>
+
+
 
           <button className="hover:text-[#171C4A]">
             AI Roadmap
