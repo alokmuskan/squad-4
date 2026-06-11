@@ -1,12 +1,32 @@
-export default function Dashboard() {
-  return (
-    <div className="min-h-screen bg-[#F8F6E8] p-8">
+import DashboardNavbar from "../components/DashboardNavbar";
+interface DashboardProps {
+  onResume: () => void;
+  onBack: () => void;
+  onSkillGapDashboard: () => void;
+}
 
+export default function Dashboard({
+  onResume,
+  onBack, 
+  onSkillGapDashboard, 
+}: DashboardProps)
+ {
+  return (  
+      <div className="min-h-screen bg-[#F8F6E8]">
+
+<div className="min-h-screen bg-[#F8F6E8]">
+  <DashboardNavbar
+   onResume={onResume}
+   onBack={onBack}
+    onSkillGapDashboard={onSkillGapDashboard}
+  />
+
+  <div className="max-w-7xl mx-auto px-6 py-5" > 
       {/* Header */}
       <div className="flex justify-between items-center">
 
         <div>
-          <h1 className="text-5xl font-black text-[#171C4A]">
+          <h1 className="text-4xl font-black text-[#171C4A]">
             Welcome Back 👋
           </h1>
 
@@ -18,11 +38,11 @@ export default function Dashboard() {
         <div className="bg-[#171C4A] text-white px-6 py-4 rounded-3xl">
           🔥 14 Day Streak
         </div>
-
+  
       </div>
 
       {/* Level Card */}
-      <div className="mt-10 bg-[#171C4A] rounded-[40px] p-10 text-white shadow-2xl">
+      <div className="mt-8 bg-[#171C4A] rounded-[40px] p-10 text-white shadow-2xl">
 
         <div className="flex justify-between items-center">
 
@@ -226,7 +246,8 @@ export default function Dashboard() {
         </div>
 
       </div>
-
+</div> 
     </div>
+    </div> 
   );
 }
