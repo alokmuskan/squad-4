@@ -4,14 +4,16 @@ import { useState } from "react";
 interface DashboardNavbarProps {
   onResume: () => void;
   onBack: () => void; 
-   onSkillGapDashboard: () => void;
+  onSkillGapDashboard: () => void;
+  onGithubAnalysis?: () => void;
 }
 
 
 export default function DashboardNavbar({
   onResume,
   onBack,
-   onSkillGapDashboard,
+  onSkillGapDashboard,
+  onGithubAnalysis,
 
 }: DashboardNavbarProps)
 {
@@ -82,7 +84,7 @@ export default function DashboardNavbar({
   Resume
 </button> 
 
-          <button className="hover:text-[#171C4A]">
+          <button onClick={onGithubAnalysis} className="hover:text-[#171C4A]">
             GitHub
           </button>
 
