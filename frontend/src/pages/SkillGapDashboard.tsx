@@ -1,18 +1,14 @@
-import { useState } from "react";
-
 interface SkillGapDashboardProps {
   onBack: () => void;
-  onSkillGapDashboard: () => void; 
 }
 
 export default function SkillGapDashboard({ onBack }: SkillGapDashboardProps) {
-  const [weeklyProgress] = useState([
+  const weeklyProgress = [
     { week: 1, progress: 58 },
     { week: 2, progress: 63 },
     { week: 3, progress: 67 },
     { week: 4, progress: 72 },
-  ]);
-
+  ];
 
   const maxProgress = Math.max(...weeklyProgress.map((w) => w.progress));
 
@@ -516,8 +512,8 @@ export default function SkillGapDashboard({ onBack }: SkillGapDashboardProps) {
         {/* SECTION 8: SKILL ROADMAP FLOW */}
         <section className="mb-12">
           <h2 className="text-3xl font-black text-[#171C4A] mb-6">Skill Roadmap Flow</h2>
-          <div className="bg-white rounded-[32px] p-8 shadow-xl">
-            <div className="flex flex-col items-center gap-6">
+          <div className="bg-white rounded-[32px] p-8 shadow-xl overflow-x-auto">
+            <div className="flex items-center justify-start gap-4 min-w-max pb-4">
               {[
                 { skill: "JavaScript", icon: "🟨" },
                 { skill: "React", icon: "⚛️" },
@@ -527,13 +523,13 @@ export default function SkillGapDashboard({ onBack }: SkillGapDashboardProps) {
                 { skill: "AWS", icon: "☁️" },
                 { skill: "CI/CD", icon: "🔄" },
               ].map((item, index) => (
-                <div key={item.skill} className="w-full flex flex-col items-center">
-                  <div className="bg-[#F8F6E8] rounded-2xl px-6 py-3 font-bold text-[#171C4A] flex items-center gap-2 mb-3">
+                <div key={item.skill} className="flex items-center gap-4">
+                  <div className="bg-[#F8F6E8] rounded-2xl px-6 py-3 font-bold text-[#171C4A] flex items-center gap-2 whitespace-nowrap">
                     <span className="text-2xl">{item.icon}</span>
                     {item.skill}
                   </div>
                   {index < 6 && (
-                    <div className="text-3xl mb-3 text-gray-400">↓</div>
+                    <div className="text-3xl text-gray-400 flex-shrink-0">→</div>
                   )}
                 </div>
               ))}
@@ -618,7 +614,7 @@ export default function SkillGapDashboard({ onBack }: SkillGapDashboardProps) {
               { title: "Learn Docker Basics", time: "5 Days", progress: 0 },
               { title: "Complete AWS Fundamentals", time: "7 Days", progress: 0 },
               { title: "Build Deployment Project", time: "10 Days", progress: 0 },
-            ].map((action) => ( 
+            ].map((action) => (
               <div
                 key={action.title}
                 className="bg-white rounded-[32px] p-6 shadow-xl hover:shadow-2xl transition-shadow"
