@@ -3,12 +3,14 @@ interface DashboardProps {
   onResume: () => void;
   onBack: () => void;
   onSkillGapDashboard: () => void;
+  onGithubAnalysis?: () => void;
 }
 
 export default function Dashboard({
   onResume,
   onBack, 
   onSkillGapDashboard, 
+  onGithubAnalysis,
 }: DashboardProps)
  {
   return (  
@@ -19,6 +21,7 @@ export default function Dashboard({
    onResume={onResume}
    onBack={onBack}
     onSkillGapDashboard={onSkillGapDashboard}
+    onGithubAnalysis={onGithubAnalysis}
   />
 
   <div className="max-w-7xl mx-auto px-6 py-5" > 

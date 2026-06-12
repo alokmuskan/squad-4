@@ -2,8 +2,9 @@
 import { motion } from "framer-motion";
 interface LoginPageProps {
   onLogin: () => void;
+  onBack?: () => void;
 }
-export default function LoginPage({ onLogin }: LoginPageProps) { 
+export default function LoginPage({ onLogin, onBack }: LoginPageProps) { 
   return (
     <div className="min-h-screen flex overflow-hidden bg-[#F8F6E8]">
 
@@ -278,7 +279,15 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     </button>
 
     {/* GitHub */}
-    <button className="w-full border border-gray-200 rounded-2xl py-4 flex items-center justify-center gap-3 bg-white hover:bg-gray-50">
+    <button 
+      type="button"
+      onClick={() => {
+        const client_id = import.meta.env.VITE_GITHUB_CLIENT_ID || "";
+        const redirect_uri = `${window.location.origin}/auth/callback`;
+        window.location.href = `https://github.com/login/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(redirect_uri)}&scope=read:user,user:email`;
+      }}
+      className="w-full border border-gray-200 rounded-2xl py-4 flex items-center justify-center gap-3 bg-white hover:bg-gray-50"
+    >
       <img
         src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
         alt="GitHub"
