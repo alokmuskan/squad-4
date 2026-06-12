@@ -21,75 +21,78 @@ type Page =
 export default function App() {
   const [page, setPage] = useState<Page>("home");
 
+  // Check if returning from GitHub OAuth callback
   useEffect(() => {
     if (window.location.pathname === "/auth/callback") {
       setPage("auth-callback");
     }
+
+    // Auto-login if user token exists in localStorage
+    const token = localStorage.getItem("auth_token");
+    if (token && window.location.pathname !== "/auth/callback") {
+      setPage("dashboard");
+    }
   }, []);
 
-if (page === "auth-callback") {
-  return (
-    <AuthCallback
-      onLoginSuccess={(token, user) => {
-        localStorage.setItem("auth_token", token);
-        localStorage.setItem("auth_user", JSON.stringify(user));
-        setPage("dashboard");
-        window.history.replaceState({}, document.title, "/");
-      }}
-      onLoginFailure={(error) => {
-        alert("Login failed: " + error);
-        setPage("login");
-        window.history.replaceState({}, document.title, "/");
-      }}
-    />
-  );
-}
+  if (page === "auth-callback") {
+    return (
+      <AuthCallback
+        onLoginSuccess={(token, user) => {
+          localStorage.setItem("auth_token", token);
+          localStorage.setItem("auth_user", JSON.stringify(user));
+          window.history.replaceState({}, document.title, "/");
+          setPage("dashboard");
+        }}
+        onLoginFailure={(error) => {
+          alert("Login failed: " + error);
+          window.history.replaceState({}, document.title, "/");
+          setPage("login");
+        }}
+      />
+    );
+  }
 
-if (page === "github-analysis") {
-  return (
-    <GithubAnalysis
-      onBack={() => setPage("dashboard")}
-      onResume={() => setPage("ResumeDetails")}
-      onSkillGapDashboard={() => setPage("SkillGapDashboard")}
-    />
-  );
-}
+  if (page === "github-analysis") {
+    return (
+      <GithubAnalysis
+        onBack={() => setPage("dashboard")}
+        onResume={() => setPage("ResumeDetails")}
+        onSkillGapDashboard={() => setPage("SkillGapDashboard")}
+      />
+    );
+  }
 
-if (page === "login") {
-  return (
-    <LoginPage
-      onLogin={() => setPage("dashboard")}
-      onBack={() => setPage("home")}
-    />
-  );
-}
+  if (page === "login") {
+    return (
+      <LoginPage
+        onLogin={() => setPage("dashboard")}
+        onBack={() => setPage("home")}
+      />
+    );
+  }
 
-if (page === "resume") {
-  return (
-    <ResumeAnalysis
-      onLogin={() => setPage("login")}
-      onDashboard={() => setPage("dashboard")}
-      onBack={() => setPage("home")}
-    />
-  );
-}
+  if (page === "resume") {
+    return (
+      <ResumeAnalysis
+        onLogin={() => setPage("login")}
+        onDashboard={() => setPage("dashboard")}
+        onBack={() => setPage("home")}
+      />
+    );
+  }
 
-
-
- if (page === "dashboard") {
+  if (page === "dashboard") {
     return (
       <Dashboard 
-      onResume={() => setPage("ResumeDetails")} 
-      onBack={() => setPage("home")}
-      onSkillGapDashboard={() => setPage("SkillGapDashboard")} 
-      onGithubAnalysis={() => setPage("github-analysis")}
+        onResume={() => setPage("ResumeDetails")} 
+        onBack={() => setPage("home")}
+        onSkillGapDashboard={() => setPage("SkillGapDashboard")} 
+        onGithubAnalysis={() => setPage("github-analysis")}
       />
     );
   } 
 
-
-
-    if (page === "SkillGapDashboard") { 
+  if (page === "SkillGapDashboard") { 
     return (
       <SkillGapDashboard
         onBack={() => setPage("dashboard")}
@@ -98,15 +101,13 @@ if (page === "resume") {
     );
   }
 
-
-
-if (page === "ResumeDetails") {
-  return (
-    <ResumeDetails
-      onBack={() => setPage("dashboard")}
-    />
-  );
-}
+  if (page === "ResumeDetails") {
+    return (
+      <ResumeDetails
+        onBack={() => setPage("dashboard")}
+      />
+    );
+  }
 
   return (
     <Home
@@ -115,4 +116,3 @@ if (page === "ResumeDetails") {
     />
   );
 }
-

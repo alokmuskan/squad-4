@@ -35,7 +35,7 @@ const authenticateToken = (req: any, res: Response, next: any) => {
 
 // Route: GitHub OAuth code exchange
 app.post("/api/auth/github", async (req: Request, res: Response) => {
-  const { code } = req.body;
+  const { code, redirect_uri } = req.body;
 
   if (!code) {
     return res.status(400).json({ error: "Authorization code is required" });
@@ -43,21 +43,34 @@ app.post("/api/auth/github", async (req: Request, res: Response) => {
 
   try {
     // 1. Exchange code for access token
+    const tokenPayload: any = {
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code,
+    };
+
+    // GitHub requires redirect_uri in token exchange if it was in the authorize request
+    if (redirect_uri) {
+      tokenPayload.redirect_uri = redirect_uri;
+    }
+
+    console.log("Exchanging code for token with GitHub...");
+
     const tokenResponse = await axios.post(
       "https://github.com/login/oauth/access_token",
-      {
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
-        code,
-      },
+      tokenPayload,
       {
         headers: { Accept: "application/json" },
       }
     );
 
+    console.log("GitHub token response:", JSON.stringify(tokenResponse.data));
+
     const accessToken = tokenResponse.data.access_token;
     if (!accessToken) {
-      return res.status(400).json({ error: "Failed to retrieve access token from GitHub" });
+      const errorDesc = tokenResponse.data.error_description || tokenResponse.data.error || "Unknown error";
+      console.error("GitHub token error:", errorDesc);
+      return res.status(400).json({ error: `GitHub OAuth error: ${errorDesc}` });
     }
 
     // 2. Fetch user profile from GitHub

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface AuthCallbackProps {
   onLoginSuccess: (token: string, user: any) => void;
@@ -10,8 +10,13 @@ export default function AuthCallback({
   onLoginFailure,
 }: AuthCallbackProps) {
   const [status, setStatus] = useState("Authenticating with GitHub...");
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    // Prevent double-execution (React strict mode or re-renders)
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const code = new URLSearchParams(window.location.search).get("code");
 
     if (!code) {
@@ -19,32 +24,40 @@ export default function AuthCallback({
       return;
     }
 
+    setStatus("Exchanging code with backend...");
+
+    const redirect_uri = `${window.location.origin}/auth/callback`;
+
     // Call local Express backend to perform token exchange
     fetch("http://localhost:5000/api/auth/github", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, redirect_uri }),
     })
-      .then((res) => {
+      .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          throw new Error("Failed to authenticate with backend server.");
+          throw new Error(data.error || "Failed to authenticate with backend server.");
         }
-        return res.json();
+        return data;
       })
       .then((data) => {
         if (data.token) {
+          setStatus("Login successful! Redirecting...");
           onLoginSuccess(data.token, data.user);
         } else {
           throw new Error("No token returned from authentication server.");
         }
       })
       .catch((err) => {
-        console.error(err);
+        console.error("Auth callback error:", err);
+        setStatus("Authentication failed.");
         onLoginFailure(err.message || "An error occurred during authentication.");
       });
-  }, [onLoginSuccess, onLoginFailure]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#F8F6E8] flex flex-col items-center justify-center">
