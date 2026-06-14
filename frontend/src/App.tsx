@@ -3,29 +3,33 @@ import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import ResumeAnalysis from "./pages/ResumeAnalysis";
 import Dashboard from "./pages/Dashboard";
-import ResumeDetails from "./pages/ResumeDetails";
-import SkillGapDashboard from "./pages/SkillGapDashboard"; 
+import SkillGapDashboard from "./pages/SkillGapDashboard";
+import RoadmapVisualization from "./pages/RoadmapVisualization";
 import AuthCallback from "./pages/AuthCallback";
 import GithubAnalysis from "./pages/GithubAnalysis";
 
 type Page =
   | "home"
-  | "resume"
   | "login"
   | "dashboard"
-  | "ResumeDetails"
-  | "SkillGapDashboard"
+  | "resumeUpload"
+  | "resumeDetails"
+  | "skillGapDashboard"
+  | "roadmapVisualization"
   | "auth-callback"
-  | "github-analysis";
+  | "github-analysis"; 
 
 export default function App() {
   const [page, setPage] = useState<Page>("home");
 
   // Check if returning from GitHub OAuth callback
   useEffect(() => {
-    if (window.location.pathname === "/auth/callback") {
-      setPage("auth-callback");
-    }
+  if (
+  window.location.pathname === "/auth/callback/google" ||
+  window.location.pathname === "/auth/callback/github"
+) {
+  setPage("auth-callback");
+}
 
     // Auto-login if user token exists in localStorage
     const token = localStorage.getItem("auth_token");
@@ -54,13 +58,14 @@ export default function App() {
 
   if (page === "github-analysis") {
     return (
-      <GithubAnalysis
-        onBack={() => setPage("dashboard")}
-        onResume={() => setPage("ResumeDetails")}
-        onSkillGapDashboard={() => setPage("SkillGapDashboard")}
-      />
+    <GithubAnalysis
+  onBack={() => setPage("dashboard")}
+  onResume={() => setPage("resumeDetails")}
+  onSkillGapDashboard={() => setPage("skillGapDashboard")}
+/> 
     );
   }
+
 
   if (page === "login") {
     return (
@@ -71,39 +76,41 @@ export default function App() {
     );
   }
 
-  if (page === "resume") {
+  if (page === "resumeUpload" || page === "resumeDetails") {
     return (
       <ResumeAnalysis
+        initialTab={page === "resumeDetails" ? "details" : "upload"}
         onLogin={() => setPage("login")}
         onDashboard={() => setPage("dashboard")}
-        onBack={() => setPage("home")}
+        onBack={() => setPage("dashboard")}
       />
     );
   }
 
   if (page === "dashboard") {
     return (
-      <Dashboard 
-        onResume={() => setPage("ResumeDetails")} 
+      <Dashboard
         onBack={() => setPage("home")}
-        onSkillGapDashboard={() => setPage("SkillGapDashboard")} 
-        onGithubAnalysis={() => setPage("github-analysis")}
-      />
-    );
-  } 
-
-  if (page === "SkillGapDashboard") { 
-    return (
-      <SkillGapDashboard
-        onBack={() => setPage("dashboard")}
-        onSkillGapDashboard={() => setPage("SkillGapDashboard")}
+        onResumeUpload={() => setPage("resumeUpload")}
+        onResumeDetails={() => setPage("resumeDetails")}
+        onSkillGapDashboard={() => setPage("skillGapDashboard")}
+        onRoadmapVisualization={() => setPage("roadmapVisualization")}
+          onGithubAnalysis={() => setPage("github-analysis")}
       />
     );
   }
 
-  if (page === "ResumeDetails") {
+  if (page === "skillGapDashboard") {
     return (
-      <ResumeDetails
+      <SkillGapDashboard
+        onBack={() => setPage("dashboard")}
+      />
+    );
+  }
+
+  if (page === "roadmapVisualization") {
+    return (
+      <RoadmapVisualization
         onBack={() => setPage("dashboard")}
       />
     );
@@ -111,7 +118,7 @@ export default function App() {
 
   return (
     <Home
-      onStart={() => setPage("resume")}
+      onStart={() => setPage("resumeUpload")}
       onSignIn={() => setPage("login")}
     />
   );
