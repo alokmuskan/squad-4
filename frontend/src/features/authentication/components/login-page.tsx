@@ -1,19 +1,32 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { startGitHubOAuth, startGoogleOAuth } from "../services/oauth";
 
 export default function LoginPage() {
-
   const [name, setName] = useState("");
-const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Clean, production-safe backend URL setup
+  const BACKEND_URL = "https://learnflow-omega-ten.vercel.app";
+
+  // Full-window redirection for Google Sign-in to completely bypass CORS preflight blocks
+  const handleGoogleLogin = () => {
+    const callbackUrl = encodeURIComponent(window.location.origin + "/dashboard");
+    window.location.href = `${BACKEND_URL}/api/auth/sign-in/social?provider=google&callbackURL=${callbackUrl}`;
+  };
+
+  // Full-window redirection for GitHub Sign-in
+  const handleGitHubLogin = () => {
+    const callbackUrl = encodeURIComponent(window.location.origin + "/dashboard");
+    window.location.href = `${BACKEND_URL}/api/auth/sign-in/social?provider=github&callbackURL=${callbackUrl}`;
+  };
 
   return (
     <div className="min-h-screen flex overflow-hidden bg-[#F8F6E8]">
       {/* LEFT SIDE */}
       <div
-          className="hidden lg:flex w-1/2 bg-cover bg-center items-center justify-center relative"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1600&auto=format&fit=crop')" }}
-        >
+        className="hidden lg:flex w-1/2 bg-cover bg-center items-center justify-center relative"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1600&auto=format&fit=crop')" }}
+      >
         <div className="absolute inset-0 bg-[#171C4A]/75" />
         <div className="relative z-10 max-w-xl px-10 text-white">
           <motion.h1
@@ -96,71 +109,71 @@ const [email, setEmail] = useState("");
             <p className="mt-4 text-gray-500">Continue your AI-powered learning journey</p>
           </div>
 
-   <div className="mt-8 space-y-5">
-  {/* Full Name */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-2">
-      Full Name
-    </label>
-    <input
-      type="text"
-      value={name}
-      onChange={(e) => setName(e.target.value)}
-      placeholder="Enter your full name"
-      className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#171C4A]/20 focus:border-[#171C4A]"
-    />
-  </div>
+          <div className="mt-8 space-y-5">
+            {/* Full Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your full name"
+                className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#171C4A]/20 focus:border-[#171C4A]"
+              />
+            </div>
 
-  {/* Email */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-2">
-      Email Address
-    </label>
-    <input
-      type="email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      placeholder="Enter your email address"
-      className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#171C4A]/20 focus:border-[#171C4A]"
-    />
-  </div>
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                type="type"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email address"
+                className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#171C4A]/20 focus:border-[#171C4A]"
+              />
+            </div>
 
-  {/* OR Divider */}
-  <div className="flex items-center my-4">
-    <div className="flex-1 border-t border-gray-200"></div>
-    <span className="px-3 text-sm text-gray-400 font-medium">OR</span>
-    <div className="flex-1 border-t border-gray-200"></div>
-  </div>
+            {/* OR Divider */}
+            <div className="flex items-center my-4">
+              <div className="flex-1 border-t border-gray-200"></div>
+              <span className="px-3 text-sm text-gray-400 font-medium">OR</span>
+              <div className="flex-1 border-t border-gray-200"></div>
+            </div>
 
-  {/* Google Button */}
-  <button
-    type="button"
-    onClick={startGoogleOAuth}
-    className="w-full border border-gray-200 rounded-2xl py-4 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 transition font-semibold"
-  >
-    <img
-      src="https://www.svgrepo.com/show/475656/google-color.svg"
-      alt="Google"
-      className="w-5 h-5"
-    />
-    Continue with Google
-  </button>
+            {/* Google Button */}
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full border border-gray-200 rounded-2xl py-4 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 transition font-semibold"
+            >
+              <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google"
+                className="w-5 h-5"
+              />
+              Continue with Google
+            </button>
 
-  {/* GitHub Button */}
-  <button
-    type="button"
-    onClick={startGitHubOAuth}
-    className="w-full border border-gray-200 rounded-2xl py-4 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 transition font-semibold"
-  >
-    <img
-      src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
-      alt="GitHub"
-      className="w-5 h-5"
-    />
-    Continue with GitHub
-  </button>
-</div>
-    <p className="text-center mt-8 text-gray-500 text-sm">
+            {/* GitHub Button */}
+            <button
+              type="button"
+              onClick={handleGitHubLogin}
+              className="w-full border border-gray-200 rounded-2xl py-4 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 transition font-semibold"
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
+                alt="GitHub"
+                className="w-5 h-5"
+              />
+              Continue with GitHub
+            </button>
+          </div>
+          <p className="text-center mt-8 text-gray-500 text-sm">
             By signing in, you agree to our terms. Your data is used only to provide LearnFlow
             features.
           </p>
@@ -168,4 +181,4 @@ const [email, setEmail] = useState("");
       </div>
     </div>
   );
-} 
+}
