@@ -1,0 +1,297 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String       @id @default(uuid())
+  email           String       @unique
+  emailVerified   Boolean      @default(false)
+  role            String       @default("user")
+  username        String?      @unique
+  fullName        String?
+  avatarUrl       String?
+  githubId        Int?         @unique
+  googleId        String?      @unique
+  githubUsername  String?
+  githubAvatarUrl String?
+  githubBio       String?
+  githubLocation  String?
+  githubFollowers Int?
+  githubFollowing Int?
+  githubPublicRepos Int?
+  careerGoal      String?
+  skills              String[]     @default([])
+  resumeData          Json?
+  learningPreferences Json?
+  createdAt           DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  repositories    Repository[]
+  skillGaps       SkillGap[]
+  assessments     Assessment[]
+  skillGapSnapshots SkillGapSnapshot[]
+  resourceRecommendations ResourceRecommendation[]
+  resourceFeedback        UserResourceFeedback[]
+  sessions                Session[]
+  accounts                Account[]
+	outcomes                UserOutcome[]
+	chatSessions            ChatSession[]
+	roadmaps                Roadmap[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+}
+
+model Account {
+  id              String  @id @default(uuid())
+  userId          String
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId       String
+  providerId      String
+  accessToken     String?
+  refreshToken    String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope           String?
+  idToken         String?
+  password        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([providerId, accountId], name: "providerAccountId")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model VectorDocument {
+  id        String   @id @default(uuid())
+  source    String
+  title     String
+  content   String
+  metadata  Json
+  embedding String?
+  createdAt DateTime @default(now())
+
+  @@index([source])
+}
+
+model SkillGapSnapshot {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal       String
+  matchScore Int
+  data       Json
+  createdAt  DateTime @default(now())
+}
+
+model ResourceRecommendation {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal       String
+  skill      String
+  title      String
+  url        String
+  platform   String
+  type       String
+  difficulty String
+  duration   String?
+  reason     String
+  source     String   @default("curated")
+  completed  Boolean  @default(false)
+  rating     Float    @default(0)
+  voteCount  Int      @default(0)
+  createdAt  DateTime @default(now())
+  feedback   UserResourceFeedback[]
+
+  @@index([userId, skill])
+  @@index([source])
+}
+
+model Repository {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  githubId    Int
+  name        String
+  fullName    String
+  description String?
+  htmlUrl     String
+  language    String?
+  starsCount  Int      @default(0)
+  forksCount  Int      @default(0)
+  updatedAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, githubId])
+}
+
+model SkillGap {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal       String
+  matchScore Int
+  strong     String[] @default([])
+  improving  String[] @default([])
+  weak       String[] @default([])
+  roadmap    Json
+  coach      String
+  details    Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Assessment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal      String
+  questions Json
+  answers   Json?
+  score     Int?
+  createdAt DateTime @default(now())
+}
+
+model LearningResource {
+  id         String   @id @default(uuid())
+  skill      String
+  title      String
+  url        String
+  platform   String
+  type       String
+  difficulty String
+  duration   String?
+  rating     Float    @default(0)
+  voteCount  Int      @default(0)
+  reason     String
+  tags       String[] @default([])
+  active     Boolean  @default(true)
+  source     String   @default("curated")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([skill, active])
+  @@index([platform, difficulty])
+}
+
+model UserResourceFeedback {
+	id          String    @id @default(uuid())
+	userId      String
+	user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+	resourceId  String
+	resourceRec ResourceRecommendation @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+	rating      Int?
+	completedAt DateTime?
+	bookmarked  Boolean   @default(false)
+	createdAt   DateTime  @default(now())
+	updatedAt   DateTime  @updatedAt
+
+	@@unique([userId, resourceId])
+	@@index([userId, resourceId])
+}
+
+model ChatSession {
+	id        String   @id @default(uuid())
+	userId    String
+	user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+	title     String   @default("Chat")
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+
+	messages ChatMessage[]
+
+	@@index([userId])
+}
+
+model ChatMessage {
+	id        String   @id @default(uuid())
+	sessionId String
+	session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+	role      String   @default("user")
+	content   String
+	createdAt DateTime @default(now())
+
+	@@index([sessionId, createdAt])
+}
+
+model Roadmap {
+	id        String   @id @default(uuid())
+	userId    String
+	user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+	title     String
+	goal      String
+	duration  String
+	phases    Json
+	createdAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+
+	@@index([userId])
+}
+
+model UserOutcome {
+	id        String   @id @default(uuid())
+	userId    String
+	user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+	goal      String
+	status    String   @default("in_progress")
+	companyId String?
+	company   Company?  @relation(fields: [companyId], references: [id])
+	startedAt DateTime @default(now())
+	updatedAt DateTime @updatedAt
+
+	@@index([userId, goal])
+}
+
+model Company {
+	id        String   @id @default(uuid())
+	name      String   @unique
+	domain    String?
+	location  String?
+	outcomes  UserOutcome[]
+	createdAt DateTime @default(now())
+}
+
+model JobPosting {
+	id               String   @id @default(uuid())
+	careerGoal       String
+	title            String
+	company          String
+	seniority        String
+	requiredSkills   Json
+	niceToHaveSkills Json
+	createdAt        DateTime @default(now())
+
+	@@index([careerGoal])
+}
+
+model MarketProfile {
+	id           String   @id @default(uuid())
+	careerGoal   String   @unique
+	weightedSkills Json
+	topCompanies String[]
+	fetchedAt    DateTime @default(now())
+	expiresAt    DateTime?
+}
