@@ -5,9 +5,9 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && tsc && tsc-alias",
     "vercel-build": "prisma generate && tsc",
-    "start": "node -r tsconfig-paths/register dist/server.js",
+    "start": "node dist/server.js",
     "lint": "biome lint src/",
     "format": "biome format src/",
     "check": "biome check src/",
@@ -18,7 +18,7 @@
     "seed:job-postings": "ts-node -r tsconfig-paths/register src/scripts/seed-job-postings.ts"
   },
   "_moduleAliases": {
-    "@": "src"
+    "@": "dist"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.6.19",
@@ -44,6 +44,7 @@
     "nodemon": "^3.1.0",
     "prisma": "^5.10.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.17",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
   }
