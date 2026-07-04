@@ -2,7 +2,7 @@ import path from "path";
 import cors from "cors";
 import express from "express";
 
-// FIXED: Converted absolute path aliases to direct relative paths
+// Relative paths for your layout configuration
 import { auth } from "./config/auth";
 import { assessmentRoutes } from "./features/assessments";
 import adminResourceRoutes from "./features/recommendations/routes/admin-resource-routes";
@@ -20,8 +20,9 @@ import { errorHandler } from "./middleware/error-handler";
 
 const app = express();
 
+// Added your actual live Vercel application to allow requests through CORS browser blockers
 const allowedOrigins = [
-    process.env.FRONTEND_URL || "http://localhost:5173",
+    "https://learnflow-frontend-indol.vercel.app",
     "http://localhost:5173",
     "http://localhost:3000",
 ];
@@ -104,11 +105,10 @@ app.use("/api/admin/resources", adminResourceRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/roadmap", roadmapRoutes);
 
-// Fallback logic for frontend client static build serving
-const frontendDist = path.join(__dirname, "../../frontend/dist");
-app.use(express.static(frontendDist));
-app.get("*", (_req, res) => {
-    res.sendFile(path.join(frontendDist, "index.html"));
+// FIXED: Replaced the broken frontend serving logic with an explicit health-check point 
+// This handles basic requests cleanly without searching for missing index.html paths
+app.get("/", (_req, res) => {
+    res.json({ status: "healthy", message: "Learn Flow Backend Engine is fully active." });
 });
 
 const adminMarketRouter = express.Router();

@@ -4,9 +4,12 @@ import { bearer } from "better-auth/plugins";
 import { env } from "./env";
 import { prisma } from "../database";
 
-const frontendUrl = env.FRONTEND_URL || "http://localhost:5173";
+// Fallback safely to your live Vercel production frontend link
+const frontendUrl = "https://learnflow-frontend-indol.vercel.app";
+
+// In production, Better-Auth baseURL MUST point directly to your Render backend link
 const backendUrl = process.env.NODE_ENV === "production" 
-    ? "https://learnflow-omega-ten.vercel.app" 
+    ? "https://squad-4.onrender.com" 
     : `http://localhost:${env.PORT || 5001}`;
 
 export const auth = betterAuth({
@@ -15,8 +18,6 @@ export const auth = betterAuth({
         usePlural: false,
     }),
     baseURL: backendUrl,
-    
-    // The advanced block was removed from here to fix the TS compilation error
     
     plugins: [bearer()],
     emailAndPassword: {
@@ -32,7 +33,8 @@ export const auth = betterAuth({
             clientSecret: env.GITHUB_CLIENT_SECRET || "",
         },
     },
-    trustedOrigins: [frontendUrl],
+    // Whitelist your live Vercel domain as a trusted source for authentication handlers
+    trustedOrigins: [frontendUrl, "http://localhost:5173"],
     account: {
         accountLinking: {
             requireLocalEmailVerified: false,
