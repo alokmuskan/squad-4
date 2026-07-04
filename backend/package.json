@@ -18,7 +18,7 @@
     "seed:job-postings": "ts-node -r tsconfig-paths/register src/scripts/seed-job-postings.ts"
   },
   "_moduleAliases": {
-    "@": "dist"
+    "@": "src"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.6.19",
