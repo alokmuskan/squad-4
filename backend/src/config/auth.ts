@@ -1,8 +1,8 @@
 import { prismaAdapter } from "@better-auth/prisma-adapter";
 import { betterAuth } from "better-auth";
 import { bearer } from "better-auth/plugins";
-import { env } from "@/config/env";
-import { prisma } from "@/database";
+import { env } from "./env";
+import { prisma } from "../database";
 
 const frontendUrl = env.FRONTEND_URL || "http://localhost:5173";
 const backendUrl = process.env.NODE_ENV === "production" 
