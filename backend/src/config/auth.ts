@@ -19,6 +19,17 @@ export const auth = betterAuth({
     }),
     baseURL: backendUrl,
     
+    // FIXED: Changed cookie attributes to 'none' and secure to true so cookies pass between Vercel and Render
+    advanced: {
+        crossSubDomainCookies: {
+            enabled: true,
+        },
+        defaultCookieAttributes: {
+            sameSite: "none",
+            secure: true,
+        }
+    },
+    
     plugins: [bearer()],
     emailAndPassword: {
         enabled: true,
